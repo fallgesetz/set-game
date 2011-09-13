@@ -3,17 +3,11 @@ import random
 import collections
 import itertools
 
-def hash_attribute(attribute):
-    hash = collections.defaultdict(int) 
-    for i in attribute:
-        hash[attribute] += 1
-    return hash.keys()
-
 def is_same(attribute):
-    return len(hash_attribute(attribute)) == 1
+    return len(set(attribute)) == 1
 
 def is_different(attribute):
-    return len(hash_attribute(attribute)) == 3
+    return len(set(attribute)) == len(attribute) 
 
 def is_set(card_1, card_2, card_3):
     """
@@ -26,23 +20,22 @@ def is_set(card_1, card_2, card_3):
     return True
 
 def exists_set(board):
-    # TODO: what's the non-bruteforce way of doing this
+    # TODO: better way to search for this?
     for hand in itertools.combinations(board, 3):
-        if not is_set(*hand):
-            return False
-    return True
+        if is_set(*hand):
+            return hand 
+    return False 
 
-def find_set(board):
-    # TODO: implement
-    pass
+shape = ["squiggle", "pill", "diamond"]
+color = ["purple", "green", "red"]
+fill = ["empty", "solid", "lined"]
+number = ["one", "two", "three"]
 
 class SetGame(object):
-    shape = ["squiggle", "pill", "diamond"]
-    color = ["purple", "green", "red"]
-    fill = ["empty", "solid", "lined"]
-    number = ["one", "two", "three"]
-
-    def shuffle():
+    def shuffle(self):
+        """
+        misnamed...slightly. This just generates the deck
+        """
         self.cards = []
         for i in shape:
             for j in color:
@@ -52,18 +45,38 @@ class SetGame(object):
 
     def __init__(self, with_replacement = True):
         self.with_replacement = with_replacement
+        self.board = []
+        self.shuffle()
 
-    def get_random_card():
-        num = random.randint(0, len(self.cards))
-        if not with_replacement:
-            self.cards.pop(num)
-        return cards[num]
+    def get_random_card(self):
+        num = random.randint(0, len(self.cards) - 1)
+        if not self.with_replacement:
+            card = self.cards.pop(num)
+        else:
+            card = self.cards[num]
+        return card 
 
-    def get_board():
-        # TODO: does not behave correctly
-        if not board in self:
-            self.board = []
+    def wipe_board(self):
+        self.board = []
+
+    def get_board(self):
         while len(self.board) < 12:
             self.board.append(self.get_random_card())
         return self.board
 
+    def remove_card(self, card):
+        """docstring for remove_card"""
+        self.board.pop(self.board.index(card))
+
+    def play_set(self, card_1, card_2, card_3):
+        """
+        removes card_1, card_2, and card_3 from the board
+        """
+        self.remove_card(card_1)
+        self.remove_card(card_2)
+        self.remove_card(card_3)
+
+def play():
+
+    """docstring for play"""
+    pass
