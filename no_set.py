@@ -70,7 +70,7 @@ def exists_partition(board):
                 return hand
             partition = exists_partition(less_board)
             if partition:
-                return partition + hand
+                return list(partition) + [[hand]]
     return False
 
 class SetGame(object):
