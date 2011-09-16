@@ -26,10 +26,52 @@ def exists_set(board):
             return hand 
     return False 
 
+
 shape = ["squiggle", "pill", "diamond"]
 color = ["purple", "green", "red"]
 fill = ["empty", "solid", "lined"]
 number = ["one", "two", "three"]
+
+def convert2num(card):
+    """
+    convert to numbers
+    """
+    return (shape.index(card[0]), color.index(card[1]), fill.index(card[2]), number.index(card[3]))
+
+def convert2card(num_card):
+    return (shape[num_card[0]], color[num_card[1]], fill[num_card[2]], number[num_card[3]])
+
+def get_other(card_1, card_2):
+    converted_card_1 = convert2num(card_1)
+    converted_card_2 = convert2num(card_2)
+
+    attributes = zip(converted_card_1, converted_card_2)
+    other_card = []
+    for attribute in attributes:
+        f,s = attribute
+        if f == s:
+            other_card.append(f)
+        else:
+            other_card.append(3 - f - s)
+
+    return convert2card(other_card)
+
+def exists_partition(board):
+    if not board:
+        return []
+    board_set = set(board)
+    for partial_hand in itertools.combinations(board, 2):
+        completion = get_other(*partial_hand)
+        if completion in board_set:
+            # recurse
+            hand = partial_hand + (completion,)
+            less_board = [x for x in board if x not in hand] 
+            if not less_board:
+                return hand
+            partition = exists_partition(less_board)
+            if partition:
+                return partition + hand
+    return False
 
 class SetGame(object):
     def shuffle(self):
@@ -60,7 +102,7 @@ class SetGame(object):
         self.board = []
 
     def get_board(self):
-        while len(self.board) < 12:
+        while len(self.board) < 12 and self.cards:
             self.board.append(self.get_random_card())
         return self.board
 
